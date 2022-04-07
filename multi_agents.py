@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import abc
 import util
@@ -49,11 +51,18 @@ class ReflexAgent(Agent):
 
         successor_game_state = current_game_state.generate_successor(action=action)
         board = successor_game_state.board
+        board_size = len(board)*len(board[0])
+        # count_twos = 0
+        # for r in board:
+        #     for cell in r:
+        #         if cell == 2:
+        #             count_twos += 1
         max_tile = successor_game_state.max_tile
         score = successor_game_state.score
-
-        "*** YOUR CODE HERE ***"
-        return score
+        free_tiles = successor_game_state.get_empty_tiles()
+        free_tiles = len(free_tiles[0])
+        taken_tiles = board_size - free_tiles
+        return (score/taken_tiles)**2 * (max_tile + free_tiles)**2
 
 
 def score_evaluation_function(current_game_state):
