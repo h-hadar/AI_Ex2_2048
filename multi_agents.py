@@ -53,11 +53,7 @@ class ReflexAgent(Agent):
         successor_game_state = current_game_state.generate_successor(action=action)
         board = successor_game_state.board
         board_size = len(board) * len(board[0])
-        # count_twos = 0
-        # for r in board:
-        #     for cell in r:
-        #         if cell == 2:
-        #             count_twos += 1
+
         max_tile = successor_game_state.max_tile
         score = successor_game_state.score
         free_tiles = successor_game_state.get_empty_tiles()
@@ -237,7 +233,17 @@ def better_evaluation_function(current_game_state):
     """
     Your extreme 2048 evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: we took to consideration the follow features:
+    - how many empty cells we have on the board
+    - board score
+    - mean cell score on the board
+    - max tile
+    - we checked witch cells can be combined horizontally and vertically
+     we sum the values of those cells and took the max between the sum on the
+     horizontal ones and the vertical ones.
+
+     we returned a function of those features while giving the empty cells
+     and combination sum bigger weight then 1.
     """
     board = current_game_state.board
     board_size = len(board) * len(board[0])
