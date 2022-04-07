@@ -3,7 +3,6 @@ import math
 import numpy as np
 import abc
 import util
-from collections import Counter
 from game import Agent, Action
 
 
@@ -59,7 +58,8 @@ class ReflexAgent(Agent):
         free_tiles = successor_game_state.get_empty_tiles()
         free_tiles = len(free_tiles[0])
         taken_tiles = board_size - free_tiles
-        return (score / taken_tiles) ** 2 * (max_tile + free_tiles) ** 2
+        return 0.8 * (score / taken_tiles) + score + max_tile + free_tiles ** 2 + len(
+            successor_game_state.get_legal_actions(0))
 
 
 def score_evaluation_function(current_game_state):
@@ -252,25 +252,25 @@ def better_evaluation_function(current_game_state):
     free_tiles = current_game_state.get_empty_tiles()
     free_tiles = len(free_tiles[0])
     taken_tiles = board_size - free_tiles
-    sum_option_to_combine_X = 0
+    sum_option_to_combine_x = 0
     for row in board:
         last_cell = row[0]
         for cell in row[1:]:
             if cell:
                 if cell == last_cell:
-                    sum_option_to_combine_X += cell
+                    sum_option_to_combine_x += cell
                 last_cell = cell
-    sum_option_to_combine_Y = 0
+    sum_option_to_combine_y = 0
     for row in board.T:
         last_cell = row[0]
         for cell in row[1:]:
             if cell:
                 if cell == last_cell:
-                    sum_option_to_combine_Y += cell
+                    sum_option_to_combine_y += cell
                 last_cell = cell
 
     return (score / taken_tiles) + score + max_tile + free_tiles ** 2 \
-           + 2.5 * max(sum_option_to_combine_X, sum_option_to_combine_Y)
+           + 2.5 * max(sum_option_to_combine_x, sum_option_to_combine_y)
 
 
 # Abbreviation
