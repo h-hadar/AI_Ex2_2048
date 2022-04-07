@@ -16,7 +16,7 @@ class ReflexAgent(Agent):
     it in any way you see fit, so long as you don't touch our method
     headers.
     """
-    
+
     def get_action(self, game_state):
         """
         You do not need to change this method, but you're welcome to.
@@ -25,20 +25,20 @@ class ReflexAgent(Agent):
 
         get_action takes a game_state and returns some Action.X for some X in the set {UP, DOWN, LEFT, RIGHT, STOP}
         """
-        
+
         # Collect legal moves and successor states
         legal_moves = game_state.get_agent_legal_actions()
-        
+
         # Choose one of the best actions
         scores = [self.evaluation_function(game_state, action) for action in legal_moves]
         best_score = max(scores)
         best_indices = [index for index in range(len(scores)) if scores[index] == best_score]
         chosen_index = np.random.choice(best_indices)  # Pick randomly among the best
-        
+
         "Add more of your code here if you want to"
-        
+
         return legal_moves[chosen_index]
-    
+
     def evaluation_function(self, current_game_state, action):
         """
         Design a better evaluation function here.
@@ -47,9 +47,9 @@ class ReflexAgent(Agent):
         GameStates (GameState.py) and returns a number, where higher numbers are better.
 
         """
-        
+
         # Useful information you can extract from a GameState (game_state.py)
-        
+
         successor_game_state = current_game_state.generate_successor(action=action)
         board = successor_game_state.board
         board_size = len(board) * len(board[0])
@@ -92,11 +92,11 @@ class MultiAgentSearchAgent(Agent):
     only partially specified, and designed to be extended.  Agent (game.py)
     is another abstract class.
     """
-    
+
     def __init__(self, evaluation_function='scoreEvaluationFunction', depth=2):
         self.evaluation_function = util.lookup(evaluation_function, globals())
         self.depth = depth
-    
+
     @abc.abstractmethod
     def get_action(self, game_state):
         return
@@ -124,7 +124,7 @@ class MinmaxAgent(MultiAgentSearchAgent):
         if action is None:
             return Action.STOP
         return action
-    
+
     def helper_minmax(self, game_state, current_depth):
         possible_actions = game_state.get_legal_actions(0)  # possible actions for our agent
         max_score_for_agent = -math.inf
@@ -140,7 +140,7 @@ class MinmaxAgent(MultiAgentSearchAgent):
                 else:
                     grandchild_score = self.helper_minmax(grandchild, current_depth + 1)[1]
                 min_choice_for_opp = min(min_choice_for_opp, grandchild_score)
-            
+
             if max_score_for_agent < min_choice_for_opp:
                 max_score_for_agent = min_choice_for_opp
                 best_move_for_agent = action
@@ -151,7 +151,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
     """
-    
+
     def get_action(self, game_state):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
@@ -160,9 +160,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         if action is None:  # if we see that we will get stuck in self.depth moves
             return Action.STOP
         return action
-    
+
     def alpha_beta_helper(self, game_state, current_depth, alpha, beta, player_index):
-        possible_actions = game_state.get_legal_actions(player_index) # possible actions for current player
+        possible_actions = game_state.get_legal_actions(player_index)  # possible actions for current player
         if current_depth == 0 or not possible_actions:
             return self.evaluation_function(game_state), None
         if player_index == 0:  # our agent - max player
@@ -189,13 +189,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 if beta <= alpha:
                     break
             return beta, min_move_for_opp
-            
-            
+
+
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
     Your expectimax agent (question 4)
     """
-    
+
     def get_action(self, game_state):
         """
         Returns the expectimax action using self.depth and self.evaluationFunction
@@ -226,7 +226,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 mean_score_after_opponents_turn += grandchild_score
             if len(opponent_branches) != 0:
                 mean_score_after_opponents_turn /= len(opponent_branches)
-        
+
             if max_score_for_agent < mean_score_after_opponents_turn:
                 max_score_for_agent = mean_score_after_opponents_turn
                 best_move_for_agent = action
@@ -246,8 +246,25 @@ def better_evaluation_function(current_game_state):
     free_tiles = current_game_state.get_empty_tiles()
     free_tiles = len(free_tiles[0])
     taken_tiles = board_size - free_tiles
-    
-    return (score / taken_tiles) + score + max_tile + free_tiles**2
+    sum_option_to_combine_X = 0
+    for row in board:
+        last_cell = row[0]
+        for cell in row[1:]:
+            if cell:
+                if cell == last_cell:
+                    sum_option_to_combine_X += cell
+                last_cell = cell
+    sum_option_to_combine_Y = 0
+    for row in board.T:
+        last_cell = row[0]
+        for cell in row[1:]:
+            if cell:
+                if cell == last_cell:
+                    sum_option_to_combine_Y += cell
+                last_cell = cell
+
+    return (score / taken_tiles) + score + max_tile + free_tiles ** 2 \
+           + 2.5 * max(sum_option_to_combine_X, sum_option_to_combine_Y)
 
 
 # Abbreviation
