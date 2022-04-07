@@ -3,6 +3,7 @@ import math
 import numpy as np
 import abc
 import util
+from collections import Counter
 from game import Agent, Action
 
 
@@ -240,17 +241,13 @@ def better_evaluation_function(current_game_state):
     """
     board = current_game_state.board
     board_size = len(board) * len(board[0])
-    # count_twos = 0
-    # for r in board:
-    #     for cell in r:
-    #         if cell == 2:
-    #             count_twos += 1
     max_tile = current_game_state.max_tile
     score = current_game_state.score
     free_tiles = current_game_state.get_empty_tiles()
     free_tiles = len(free_tiles[0])
     taken_tiles = board_size - free_tiles
-    return (score / taken_tiles) ** 2 * (max_tile + free_tiles) ** 2
+    
+    return (score / taken_tiles) + score + max_tile + free_tiles**2
 
 
 # Abbreviation
